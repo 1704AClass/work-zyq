@@ -2,7 +2,7 @@ package com.itheima.dao;
 
 import java.util.List;
 
-import com.github.pagehelper.Page;
+import com.alibaba.dubbo.container.page.Page;
 import com.itheima.pojo.CheckItem;
 
 public interface CheckItemDao {

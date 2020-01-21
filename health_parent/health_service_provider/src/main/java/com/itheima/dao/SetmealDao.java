@@ -1,5 +1,6 @@
 package com.itheima.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import com.github.pagehelper.Page;
@@ -12,5 +13,9 @@ public interface SetmealDao {
 	void add(Setmeal setmeal);
 
 	Page<Setmeal> selectByCondition(String queryString);
+
+	List<Setmeal> findAll();
+
+	Setmeal findById(int id);
 	
 }
