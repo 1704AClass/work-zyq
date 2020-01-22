@@ -1,21 +1,16 @@
 package com.itheima.dao;
 
+import com.github.pagehelper.Page;
+import com.itheima.pojo.CheckGroup;
+import com.itheima.pojo.Setmeal;
+
 import java.util.List;
 import java.util.Map;
 
-import com.github.pagehelper.Page;
-import com.itheima.pojo.Setmeal;
-
 public interface SetmealDao {
-
-	void setSetmealAndCheckGroup(Map<String, Integer> map);
-
-	void add(Setmeal setmeal);
-
-	Page<Setmeal> selectByCondition(String queryString);
-
-	List<Setmeal> findAll();
-
-	Setmeal findById(int id);
-	
+    public void add(Setmeal setmeal);
+    public void setSetmealAndCheckGroup(Map map);
+    public Page<Setmeal> findByCondition(String queryString);
+    public List<Setmeal> findAll();
+    public Setmeal findById(int id);
 }

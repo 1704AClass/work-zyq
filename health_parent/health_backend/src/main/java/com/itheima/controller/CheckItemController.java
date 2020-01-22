@@ -7,13 +7,12 @@ import com.itheima.entity.QueryPageBean;
 import com.itheima.entity.Result;
 import com.itheima.pojo.CheckItem;
 import com.itheima.service.CheckItemService;
-
-import java.util.List;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 检查项管理
@@ -38,11 +37,6 @@ public class CheckItemController {
         return  new Result(true, MessageConstant.ADD_CHECKITEM_SUCCESS);
     }
 
-    @RequestMapping("/findList")
-    public List<CheckItem> findByCode(){
-    	return checkItemService.findByList();
-    }
-    
     //检查项分页查询
     @RequestMapping("/findPage")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean){
@@ -87,14 +81,16 @@ public class CheckItemController {
             return new Result(false, MessageConstant.QUERY_CHECKITEM_FAIL);
         }
     }
+
     @RequestMapping("/findAll")
     public Result findAll(){
-    	List<CheckItem> list = checkItemService.findByList();
-    	if(list != null && list .size()>0){
-    		Result result = new Result(true, MessageConstant.QUERY_CHECKITEM_SUCCESS);
-    		result.setData(list);
-    		return result;
-    	}
-    	return new Result(false, MessageConstant.QUERY_CHECKITEM_FAIL);
+        try{
+            List<CheckItem> list = checkItemService.findAll();
+            return  new Result(true, MessageConstant.QUERY_CHECKITEM_SUCCESS,list);
+        }catch (Exception e){
+            e.printStackTrace();
+            //服务调用失败
+            return new Result(false, MessageConstant.QUERY_CHECKITEM_FAIL);
+        }
     }
 }

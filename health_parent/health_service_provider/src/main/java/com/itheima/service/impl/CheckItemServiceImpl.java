@@ -60,12 +60,7 @@ public class CheckItemServiceImpl implements CheckItemService {
         return checkItemDao.findById(id);
     }
 
-	@Override
-	public List<CheckItem> findByList() {
-		// TODO Auto-generated method stub
-		System.out.println("aa");
-		List<CheckItem> selectByList = checkItemDao.findByList();
-		System.out.println(selectByList);
-		return selectByList;
-	}
+    public List<CheckItem> findAll() {
+        return checkItemDao.findAll();
+    }
 }

@@ -1,80 +1,70 @@
 package com.itheima.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.itheima.constant.RedisConstant;
 import com.itheima.dao.SetmealDao;
 import com.itheima.entity.PageResult;
+import com.itheima.entity.QueryPageBean;
 import com.itheima.pojo.Setmeal;
-import com.itheima.service.CheckGroupService;
 import com.itheima.service.SetmealService;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisPool;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@Service(interfaceClass = SetmealService.class) 
+/**
+ * 体检套餐服务
+ */
+@Service(interfaceClass = SetmealService.class)
 @Transactional
-public class SetmealServiceImpl implements SetmealService {
+public class SetmealServiceImpl implements SetmealService{
+    @Autowired
+    private SetmealDao setmealDao;
+    @Autowired
+    private JedisPool jedisPool;
 
-	@Resource
-	private SetmealDao setmealDao;
-	@Resource 
-	private JedisPool jedisPool;
+    //新增套餐信息，同时需要关联检查组
+    public void add(Setmeal setmeal, Integer[] checkgroupIds) {
+        setmealDao.add(setmeal);
+        Integer setmealId = setmeal.getId();
+        this.setSetmealAndCheckgroup(setmealId,checkgroupIds);
+        //将图片名称保存到Redis集合中
+        String fileName = setmeal.getImg();
+        jedisPool.getResource().sadd(RedisConstant.SETMEAL_PIC_DB_RESOURCES,fileName);
+    }
 
-	//新增套餐
-	@Override
-	public void add(Setmeal setmeal, Integer[] checkgroupIds) {
-		// TODO Auto-generated method stub
-		setmealDao.add(setmeal); 
-		if(checkgroupIds != null && checkgroupIds.length > 0){ 
-			//绑定套餐和检查组的多对多关系 
-			setSetmealAndCheckGroup(setmeal.getId(),checkgroupIds); 
-		}
-		//将图片名称保存到Redis 
-		savePic2Redis(setmeal.getImg());
-	}
-	
-	//将图片名称保存到Redis 
-	private void savePic2Redis(String pic){ 
-		jedisPool.getResource().sadd(RedisConstant.SETMEAL_PIC_DB_RESOURCES,pic); 
-	}
-	
-	//绑定套餐和检查组的多对多关系 
-	private void setSetmealAndCheckGroup(Integer id, Integer[] checkgroupIds) { 
-		for (Integer checkgroupId : checkgroupIds) { 
-			Map<String,Integer> map = new HashMap<>(); 
-			map.put("setmeal_id",id); 
-			map.put("checkgroup_id",checkgroupId); 
-			setmealDao.setSetmealAndCheckGroup(map); 
-		} 
-	}
+    @Override
+    public PageResult pageQuery(QueryPageBean queryPageBean) {
+        Integer currentPage = queryPageBean.getCurrentPage();
+        Integer pageSize = queryPageBean.getPageSize();
+        String queryString = queryPageBean.getQueryString();
+        PageHelper.startPage(currentPage,pageSize);
+        Page<Setmeal> page = setmealDao.findByCondition(queryString);
+        return new PageResult(page.getTotal(),page.getResult());
+    }
 
-	//分页查询
-	@Override
-	public PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString) {
-		// TODO Auto-generated method stub
-		PageHelper.startPage(currentPage,pageSize); 
-		Page<Setmeal> page = setmealDao.selectByCondition(queryString); 
-		return new PageResult(page.getTotal(),page.getResult());
-	}
+    public List<Setmeal> findAll() {
+        return setmealDao.findAll();
+    }
 
-	@Override
-	public List<Setmeal> findAll() {
-		// TODO Auto-generated method stub
-		return setmealDao.findAll();
-	}
+    //根据套餐ID查询套餐详情（套餐基本信息、套餐对应的检查组信息、检查组对应的检查项信息）
+    public Setmeal findById(int id) {
+        return setmealDao.findById(id);
+    }
 
-	@Override
-	public Setmeal findById(int id) {
-		// TODO Auto-generated method stub
-		return setmealDao.findById(id);
-	}
+    //设置套餐和检查组多对多关系，操作t_setmeal_checkgroup
+    public void setSetmealAndCheckgroup(Integer setmealId,Integer[] checkgroupIds){
+        if(checkgroupIds != null && checkgroupIds.length > 0){
+            for (Integer checkgroupId : checkgroupIds) {
+                Map<String,Integer> map = new HashMap<>();
+                map.put("setmealId",setmealId);
+                map.put("checkgroupId",checkgroupId);
+                setmealDao.setSetmealAndCheckGroup(map);
+            }
+        }
+    }
 }

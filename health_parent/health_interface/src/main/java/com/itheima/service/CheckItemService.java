@@ -1,10 +1,10 @@
 package com.itheima.service;
 
-import java.util.List;
-
 import com.itheima.entity.PageResult;
 import com.itheima.entity.QueryPageBean;
 import com.itheima.pojo.CheckItem;
+
+import java.util.List;
 
 //服务接口
 public interface CheckItemService {
@@ -13,5 +13,5 @@ public interface CheckItemService {
     public void deleteById(Integer id);
     public void edit(CheckItem checkItem);
     public CheckItem findById(Integer id);
-	public List<CheckItem> findByList();
+    public List<CheckItem> findAll();
 }

@@ -1,3 +1,0 @@
-0:0:0:0:0:0:0:1 - - [20/Jan/2020:20:31:52 +0800] "GET /pages/setmeal_detail.html?id=10 HTTP/1.1" 304 - http-bio-80-exec-1 37
-0:0:0:0:0:0:0:1 - - [20/Jan/2020:20:31:53 +0800] "POST /setmeal/findById.do?id=10 HTTP/1.1" 200 62 http-bio-80-exec-3 1109
-0:0:0:0:0:0:0:1 - - [20/Jan/2020:20:32:00 +0800] "POST /setmeal/findById.do?id=10 HTTP/1.1" 200 62 http-bio-80-exec-4 18
